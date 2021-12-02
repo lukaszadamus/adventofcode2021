@@ -33,14 +33,7 @@ public class Tracker
     public Position[] Track(IEnumerable<Instruction> instructions)
         => instructions.Aggregate(_initialPosition, _instructionProcessor, _resultSelector).ToArray();
 
-<<<<<<< Updated upstream
-public record Instruction(Operation Operation, int Value);
-public enum Operation
-{
-    forward,
-    down,
-    up,
-=======
+
     public static Func<Instruction, Position, Position> PositioningA = (i, p) =>
     {
         var horizontal = p.Horizontal;
@@ -56,7 +49,7 @@ public enum Operation
                 depth -= i.Value;
                 break;
             case Operation.forward:
-                horizontal += i.Value;                
+                horizontal += i.Value;
                 break;
         }
 
@@ -85,7 +78,6 @@ public enum Operation
 
         return new Position(horizontal, depth, aim);
     };
->>>>>>> Stashed changes
 }
 
 public record Instruction(Operation Operation, int Value);
