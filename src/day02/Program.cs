@@ -38,7 +38,6 @@ foreach (var i in input)
 Console.WriteLine($"Result B: {horizontal * depth}");
 
 public record Instruction(Operation Operation, int Value);
-public record Position(int Horizontal, int Depth, int Aim);
 public enum Operation
 {
     forward,
