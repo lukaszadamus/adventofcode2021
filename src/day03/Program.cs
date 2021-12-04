@@ -1,36 +1,33 @@
-﻿
-var input = File.ReadAllLines("input.txt")
-    .Select(line => line.Select(bit => bit == '1').ToArray());
+﻿var input = File.ReadAllLines("input.txt")
+    .Select(line => line);
 
-var numberLength = input.First().Length;
+Console.WriteLine($"Result A:{FindA(input, GammaCriteria) * FindA(input, EpsilonCriteria)}");
+Console.WriteLine($"Result B:{FindB(input, OxygenGeneratorCriteria) * FindB(input, CO2ScrubberCriteria)}");
 
-Func<Func<int, int>, int> FindRate = criteria => Convert.ToInt32(NumberAsString(Counts(input), criteria), 2);
-Func<Func<int, bool>, int> FindRating = criteria => Find(input, criteria);
+int FindA(IEnumerable<string> input, Func<int, char> criteria)
+{   
+    var s = input.Aggregate(Enumerable.Repeat(0, input.First().Length), (acc, n) => acc.Zip(n, (a, b) => a + (b == '1' ? 1 : -1)))
+        .Select(criteria)
+        .Aggregate(string.Empty, (s, i) => s + i);
 
-Console.WriteLine($"Result A:{FindRate(GammaCriteria) * FindRate(EpsilonCriteria)}");
-Console.WriteLine($"Result B:{FindRating(OxygenGeneratorCriteria) * FindRating(CO2ScrubberCriteria)}");
+    return Convert.ToInt32(s, 2);
+}
 
-int Find(IEnumerable<bool[]> input, Func<int, bool> criteria)
+int FindB(IEnumerable<string> input, Func<int, char> criteria)
 {
     var index = 0;
 
     while (input.Count() > 1)
     {
-        var bar = input.Select(x => x[index] ? 1 : -1).Sum();
-        input = input.Where(x => x[index] == criteria(bar)).ToArray();
+        var sum = input.Select(x => x[index] == '1' ? 1 : -1).Sum();
+        input = input.Where(x => x[index] == criteria(sum)).ToArray();
         index++;
     }
 
-    return Convert.ToInt32(input.First().Aggregate(string.Empty, (s, i) => s + (i ? "1" : "0")), 2);
+    return Convert.ToInt32(input.First().Aggregate(string.Empty, (s, i) => s + i), 2);
 }
 
-IEnumerable<int> Counts(IEnumerable<bool[]> input)
-    => input.Aggregate(Enumerable.Repeat(0, numberLength), (acc, n) => acc.Zip(n, (a, b) => a + (b ? 1 : -1)));
-
-string NumberAsString(IEnumerable<int> counts, Func<int, int> criteria)
-     => counts.Select(criteria).Aggregate(string.Empty, (s, i) => s + i.ToString());
-
-int GammaCriteria(int x) => x >= 0 ? 1 : 0;
-int EpsilonCriteria(int x) => x <= 0 ? 1 : 0;
-bool OxygenGeneratorCriteria(int x) => x >= 0;
-bool CO2ScrubberCriteria(int x) => x < 0;
+char GammaCriteria(int x) => x >= 0 ? '1' : '0';
+char EpsilonCriteria(int x) => x <= 0 ? '1' : '0';
+char OxygenGeneratorCriteria(int x) => x >= 0 ? '1' : '0';
+char CO2ScrubberCriteria(int x) => x < 0 ? '1' : '0';
