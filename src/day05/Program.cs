@@ -9,24 +9,10 @@ Console.WriteLine($"Result B: {Result(input, false)}");
 static int Result(List<Segment> segments, bool skipDiagonal = true)
     => segments.Aggregate(new List<Point>(), (acc, s) =>
     {
-        var dx = (s.A.X - s.B.X) switch 
-        {
-            < 0 => 1,
-            > 0 => -1,
-            _ => 0
-        };
-
-        var dy = (s.A.Y - s.B.Y) switch
-        {
-            < 0 => 1,
-            > 0 => -1,
-            _ => 0
-        };
-
-        if(dx != 0 && dy != 0 && skipDiagonal)
-        {
-            return acc;
-        }
+        var dx = -Math.Sign(s.A.X - s.B.X);
+        var dy = -Math.Sign(s.A.Y - s.B.Y);
+        if (dx != 0 && dy != 0 && skipDiagonal) 
+            return acc;        
 
         var x = s.A.X;
         var y = s.A.Y;
