@@ -5,18 +5,15 @@
 Console.WriteLine($"Result A:{Result(input, 80)}");
 Console.WriteLine($"Result B:{Result(input, 256)}");
 
-long Result(long[] input, int days)
+static long Result(long[] input, int days)
 {
     var day = 0;
     while (day < days)
     {
         var dDayFor = input[0];
-        var tmpA = new long[input.Length];
-
-        Array.Copy(input, 1, tmpA, 0, input.Length - 1);
-        tmpA[6] += dDayFor;
-        tmpA[8] += dDayFor;
-        input = tmpA;
+        Array.Copy(input, 1, input, 0, input.Length - 1);
+        input[6] += dDayFor;
+        input[8] = dDayFor;
         day++;
     }
     return input.Sum();
