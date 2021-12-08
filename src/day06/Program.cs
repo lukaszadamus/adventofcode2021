@@ -1,6 +1,6 @@
 ﻿var input = File.ReadAllText("input.txt")
     .Split(',').Select(c => long.Parse(c))
-    .Aggregate(Enumerable.Repeat(0L, 9).ToArray(), (acc, f) => { acc[f]++; return acc; });
+    .Aggregate(new long[9], (acc, f) => { acc[f]++; return acc; });
 
 Console.WriteLine($"Result A:{Result(input, 80)}");
 Console.WriteLine($"Result B:{Result(input, 256)}");

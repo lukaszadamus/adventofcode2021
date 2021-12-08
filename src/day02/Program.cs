@@ -33,7 +33,6 @@ public class Tracker
     public Position[] Track(IEnumerable<Instruction> instructions)
         => instructions.Aggregate(_initialPosition, _instructionProcessor, _resultSelector).ToArray();
 
-
     public static Func<Instruction, Position, Position> PositioningA = (i, p) =>
     {
         var horizontal = p.Horizontal;
