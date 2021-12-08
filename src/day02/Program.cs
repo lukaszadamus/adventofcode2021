@@ -33,10 +33,6 @@ public class Tracker
     public Position[] Track(IEnumerable<Instruction> instructions)
         => instructions.Aggregate(_initialPosition, _instructionProcessor, _resultSelector).ToArray();
 
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
     public static Func<Instruction, Position, Position> PositioningA = (i, p) =>
     {
         var horizontal = p.Horizontal;
@@ -52,11 +48,7 @@ public class Tracker
                 depth -= i.Value;
                 break;
             case Operation.forward:
-<<<<<<< Updated upstream
                 horizontal += i.Value;
-=======
-                horizontal += i.Value;                
->>>>>>> Stashed changes
                 break;
         }
 
