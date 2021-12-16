@@ -10,53 +10,44 @@ static int FindA(Dictionary<Vertex, List<Vertex>> graph)
 
     var result = Dijkstra(graph, source, target);
 
-    return result.distance[target];
+    return result[target];
 }
 
-static (Dictionary<Vertex, int> distance, Dictionary<Vertex, Vertex?> previous) Dijkstra(Dictionary<Vertex, List<Vertex>> graph, Vertex source, Vertex target)
+static Dictionary<Vertex, int> Dijkstra(Dictionary<Vertex, List<Vertex>> graph, Vertex source, Vertex target)
 {   
-    var distance = new Dictionary<Vertex, int>();
-    distance[source] = 0;
+    var risk = new Dictionary<Vertex, int>();
+    risk[source] = 0;
 
-    var visited = new HashSet<Vertex>();
-
-    var previous = new Dictionary<Vertex, Vertex?>();
+    var visited = new HashSet<Vertex>();    
 
     foreach (var vertex in graph.Keys)
-    {
         if (vertex != source)
-        {
-            distance[vertex] = int.MaxValue;
-            previous[vertex] = null;
-        }
-    }
+            risk[vertex] = int.MaxValue;
+
 
     while (visited.Count <= graph.Count)
     {
-        var current = Min(distance, visited);
+        var current = Min(risk, visited);
         visited.Add(current);
 
         if(current == target)
         {
-            return(distance, previous);
+            return risk;
         }
 
         foreach (var vertex in graph[current])
         {
-            var alt = distance[current] + vertex.Risk;
-            if (alt < distance[vertex])
-            {
-                distance[vertex] = alt;
-                previous[vertex] = current;
-            }
+            var alt = risk[current] + vertex.Risk;
+            if (alt < risk[vertex])
+                risk[vertex] = alt;
+
         }
     }
 
-    return (distance, previous);
+    return risk;
 
     static Vertex Min(Dictionary<Vertex, int> distance, HashSet<Vertex> visited)
-        => distance.Where(x => !visited.Contains(x.Key)).OrderBy(x => x.Value).First().Key;
-    
+        => distance.Where(x => !visited.Contains(x.Key)).OrderBy(x => x.Value).First().Key;    
 }
 
 record Vertex(int X, int Y, int Risk);
