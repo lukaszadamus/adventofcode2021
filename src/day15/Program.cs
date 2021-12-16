@@ -59,49 +59,6 @@ static (Dictionary<Vertex, int> distance, Dictionary<Vertex, Vertex?> previous) 
     
 }
 
-static void DijkstraPriorityQueue(Dictionary<Vertex, List<Vertex>> graph)
-{
-    var source = graph.First().Key;
-    var target = graph.Last().Key;
-
-
-    var distance = new Dictionary<Vertex, int>();
-    distance[source] = 0;
-
-    var pq = new PriorityQueue<Vertex, int>(graph.Keys.Count);
-
-    var previous = new Dictionary<Vertex, Vertex?>();
-
-    foreach (var vertex in graph.Keys)
-    {
-        if(vertex != source)
-        {
-            distance[vertex] = int.MaxValue;
-            previous[vertex] = null;
-        }
-
-        pq.Enqueue(vertex, distance[vertex]);
-    }
-
-    while(pq.Count > 0)
-    {
-        var current = pq.Dequeue();
-
-        foreach(var vertex in graph[current])
-        {
-            var alt = distance[current] + vertex.Risk;
-            if(alt < distance[vertex])
-            {
-                distance[vertex] = alt;
-                previous[vertex] = current;
-                //pq decrease priority
-            }
-        }
-    }
-
-    var foo = 1;
-}
-
 record Vertex(int X, int Y, int Risk);
 
 internal static class InputParser
