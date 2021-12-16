@@ -1,6 +1,7 @@
 ﻿var graph = InputParser.LoadCave("input.txt");
 
 Console.WriteLine($"Result A: {FindA(graph)}");
+Console.WriteLine($"Result B: {FindB(graph)}");
 
 
 static int FindA(Dictionary<Vertex, List<Vertex>> graph)
@@ -9,6 +10,18 @@ static int FindA(Dictionary<Vertex, List<Vertex>> graph)
     var target = graph.Last().Key;
 
     var result = Dijkstra(graph, source, target);
+
+    return result[target];
+}
+
+static int FindB(Dictionary<Vertex, List<Vertex>> graph)
+{
+    var bigGraph = InputParser.ResizeGraph(graph);
+
+    var source = bigGraph.First().Key;
+    var target = bigGraph.Last().Key;
+
+    var result = Dijkstra(bigGraph, source, target);
 
     return result[target];
 }
@@ -81,6 +94,60 @@ internal static class InputParser
         }
 
         return graph;
+    }
+
+    public static Dictionary<Vertex, List<Vertex>> ResizeGraph(Dictionary<Vertex, List<Vertex>> graph, int byX = 5, int byY = 5)
+    {
+        var initMaxX = graph.Keys.Max(x => x.X);
+        var initMaxY = graph.Keys.Max(x => x.Y);
+        var offsetX = initMaxX + 1;
+        var offsetY = initMaxY + 1;
+
+        var risks = new byte[offsetY*byY, offsetX*byX];
+
+        var bigGraph = new Dictionary<Vertex, List<Vertex>>();
+
+
+        foreach (var vertex in graph.Keys)
+        {
+            for (int y = 0; y < byY; y++)
+                for (int x = 0; x < byX; x++)
+                {
+                    var newX = x * offsetX + vertex.X;
+                    var newY = y * offsetY + vertex.Y;
+
+                    var newRisk = GetRisk(vertex.Risk, x + y);
+
+                    risks[newY, newX] = (byte)newRisk;
+                    bigGraph.Add(new Vertex(newX, newY, newRisk), new List<Vertex>());
+                }
+        }
+
+        foreach (var vertex in bigGraph.Keys)
+        {
+            bigGraph[vertex] = FindNeighbors(vertex, risks).OrderBy(x => x.Risk).ToList();
+        }
+
+
+        return bigGraph;
+
+
+        static int GetRisk(int initialRisk, int additions)
+        {
+            for(var i = 0; i < additions; i++)
+            {
+                if(initialRisk == 9)
+                {
+                    initialRisk = 1;
+                }
+                else
+                {
+                    initialRisk++;
+                }
+            }
+
+            return initialRisk;
+        }
     }
 
     private static IEnumerable<Vertex> FindNeighbors(Vertex vertex, byte[,] risks)
