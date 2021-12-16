@@ -13,41 +13,40 @@ static int FindA(Dictionary<Vertex, List<Vertex>> graph)
     return result[target];
 }
 
-static Dictionary<Vertex, int> Dijkstra(Dictionary<Vertex, List<Vertex>> graph, Vertex source, Vertex target)
-{   
-    var risk = new Dictionary<Vertex, int>();
-    risk[source] = 0;
+static Dictionary<Vertex, int> Dijkstra(Dictionary<Vertex, List<Vertex>> graph, Vertex source, Vertex? target)
+{    
+    var distance = new Dictionary<Vertex, int>();
+    distance[source] = 0;
 
-    var visited = new HashSet<Vertex>();    
+    var pq = new Q();        
 
     foreach (var vertex in graph.Keys)
-        if (vertex != source)
-            risk[vertex] = int.MaxValue;
-
-
-    while (visited.Count <= graph.Count)
     {
-        var current = Min(risk, visited);
-        visited.Add(current);
+        if (vertex != source)
+            distance[vertex] = int.MaxValue;            
+        
+        pq.Enqueue(vertex, distance[vertex]);
+    }
 
-        if(current == target)
-        {
-            return risk;
-        }
+    while (!pq.Empty())
+    {
+        var current = pq.Dequeue();
+
+        if(target is not null && current == target)
+            return distance;
 
         foreach (var vertex in graph[current])
         {
-            var alt = risk[current] + vertex.Risk;
-            if (alt < risk[vertex])
-                risk[vertex] = alt;
-
+            var alt = distance[current] + vertex.Risk;
+            if (alt < distance[vertex])
+            {
+                distance[vertex] = alt;
+                pq.ChangePriority(vertex, alt);
+            }
         }
     }
 
-    return risk;
-
-    static Vertex Min(Dictionary<Vertex, int> distance, HashSet<Vertex> visited)
-        => distance.Where(x => !visited.Contains(x.Key)).OrderBy(x => x.Value).First().Key;    
+    return distance;
 }
 
 record Vertex(int X, int Y, int Risk);
@@ -95,4 +94,26 @@ internal static class InputParser
         if (vertex.Y + 1 < risks.GetLength(0))
             yield return new Vertex(vertex.X, vertex.Y + 1, risks[vertex.Y + 1, vertex.X]);
     }
+}
+
+internal class Q
+{
+    private readonly Dictionary<Vertex, int> _elements = new Dictionary<Vertex, int>();
+
+    public void Enqueue(Vertex vertex, int priority)
+        => _elements.Add(vertex, priority);
+    
+
+    public Vertex Dequeue()
+    {        
+        var element = _elements.OrderBy(x => x.Value).First().Key;
+        _elements.Remove(element);
+        return element;
+    }
+
+    public void ChangePriority(Vertex vertex, int priority)
+        => _elements[vertex] = priority;
+
+    public bool Empty()
+        => _elements.Count == 0;
 }
