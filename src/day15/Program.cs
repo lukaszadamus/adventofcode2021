@@ -107,7 +107,6 @@ internal static class InputParser
 
         var bigGraph = new Dictionary<Vertex, List<Vertex>>();
 
-
         foreach (var vertex in graph.Keys)
         {
             for (int y = 0; y < byY; y++)
@@ -128,26 +127,14 @@ internal static class InputParser
             bigGraph[vertex] = FindNeighbors(vertex, risks).OrderBy(x => x.Risk).ToList();
         }
 
-
         return bigGraph;
 
-
         static int GetRisk(int initialRisk, int additions)
-        {
-            for(var i = 0; i < additions; i++)
+            => (initialRisk + additions) switch
             {
-                if(initialRisk == 9)
-                {
-                    initialRisk = 1;
-                }
-                else
-                {
-                    initialRisk++;
-                }
-            }
-
-            return initialRisk;
-        }
+                > 9 => initialRisk + additions + 1 - 10,
+                <= 9 => initialRisk + additions,
+            };        
     }
 
     private static IEnumerable<Vertex> FindNeighbors(Vertex vertex, byte[,] risks)
